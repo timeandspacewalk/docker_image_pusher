@@ -462,3 +462,108 @@ networks:
     external: true  
 EOF
 ----------------------------------------------------------------------------------------------
+
+12.TinyMediaManager影音管理
+----------------------------------------------------------------------------------------------
+# 配置文件:TinyMediaManager.yaml
+version: '3'
+services:
+  tinymediamanager:
+    image: dzhuang/tinymediamanager:latest # 支持中文字体
+    container_name: tinyMediaManager
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Shanghai
+    extra_hosts: # 搜刮器地址Hosts解析，因为用到了SmartDNS，所以不需要配置hosts地址解析，对于未配置SmartDNS的朋友，就需要用到。
+      - "www.themoviedb.org:18.160.41.129"
+      - "api.themoviedb.org:52.85.151.28"
+      - "image.tmdb.org:169.150.247.35"
+    volumes:
+      - /SSD/Demo/TMM/config:/config # 配置目录
+      - /Moive/downloads:/media # 电影目录
+    ports:
+      - 5800:5800
+    networks:
+      - traefik_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_net"
+      - "traefik.http.routers.tinymediamanager.rule=Host(`tmm.rockylinux.cn`)"
+      - "traefik.http.routers.tinymediamanager.entryPoints=websecure"
+      - "traefik.http.routers.tinymediamanager.tls.certresolver=myresolver"
+      - "traefik.http.routers.tinymediamanager.service=tinymediamanager"
+      - "traefik.http.routers.tinymediamanager.middlewares=dashboard-auth@docker,SecHeaders@file"
+      - "traefik.http.services.tinymediamanager.loadbalancer.server.port=5800"
+networks:
+  traefik_net:
+    external: true
+----------------------------------------------------------------------------------------------
+
+13.qBittorrent下载管理
+----------------------------------------------------------------------------------------------
+# 配置文件:qBittorrent.yaml
+version: '3'
+services:
+  qbittorrent:
+    image: superng6/qbittorrentee:latest 
+    container_name: qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Shanghai
+      - WEBUIPORT=8080 # WEB 端口设置
+    cpus: 1.0
+    mem_limit: 1GB
+    ports:
+      - 8080:8080
+      - 6881:6881 # 此端口需要在防火墙、路由器或者安全组规则中开启允许公网访问
+      - 6881:6881/udp
+    volumes:
+      - /SSD/Demo/qBittorrent/config:/config  # 配置文件存放目录
+      - /Moive/downloads:/downloads # 定义电影存放目录
+    networks:
+      - traefik_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_net"
+      - "traefik.http.routers.qbittorrent.rule=Host(`bt.rockylinux.cn`)"
+      - "traefik.http.routers.qbittorrent.entryPoints=websecure"
+      - "traefik.http.routers.qbittorrent.tls.certresolver=myresolver"
+      - "traefik.http.routers.qbittorrent.service=qbittorrent"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
+networks:
+  traefik_net:
+    external: true
+EOF
+----------------------------------------------------------------------------------------------
+
+14. SmartDNS智能DNS管理
+----------------------------------------------------------------------------------------------
+# 配置文件:SmartDNS.yaml
+	version: "3"
+services:
+  smartdns:
+    image: rockylinux/alpine-smartdns-service:v1.0
+    container_name: smartdns
+    restart: always
+    privileged: true
+#  因为我们使用 ADGuardHome DNS 解析功能做广告拦截，ADGuardHome 上游使用 SmartDNS，所以不需要放出 SmartDNS 端口，在 ADGuardHome 上配置上游  DNS  为 SmartDNS 的容器 IP 即可。
+#    ports:
+#      - 53:53/tcp
+#      - 53:53/udp
+    volumes:
+      - /SSD/Dockerfile/smartdns/config.conf:/etc/smartdns/config.conf
+    networks:
+      - traefik_net
+networks:
+  traefik_net:
+    external: true
+EOF
+
+----------------------------------------------------------------------------------------------
+
+
+注：https://www.rockylinux.cn/
