@@ -6,3 +6,4 @@
 #本人常用DOCKER仓库
 whyour/qinglong
 nyanmisaka/jellyfin
+hdbjlizhe/autman
