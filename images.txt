@@ -7,3 +7,14 @@
 whyour/qinglong
 nyanmisaka/jellyfin
 hdbjlizhe/autman
+axiom/rsync-server
+filebrowser/filebrowser
+adguard/adguardhome
+jeessy/ddns-go
+gitea/gitea
+vaultwarden/server:1.30.5
+photoprism/photoprism
+rustdesk/rustdesk-server
+dzhuang/tinymediamanager
+superng6/qbittorrentee
+rockylinux/alpine-smartdns-service
