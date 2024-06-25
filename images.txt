@@ -12,7 +12,7 @@ filebrowser/filebrowser
 adguard/adguardhome
 jeessy/ddns-go
 gitea/gitea
-vaultwarden/server:1.30.5
+vaultwarden/server
 photoprism/photoprism
 rustdesk/rustdesk-server
 dzhuang/tinymediamanager
